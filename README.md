@@ -24,6 +24,7 @@ Ce dépôt contient le **backend en Go** structuré selon une architecture modul
 ---
 
 ## 📂 Arborescence
+```bash
 backend-velum/
 ├── cmd/
 │   └── server/
@@ -34,7 +35,7 @@ backend-velum/
 │       ├── model.go           # Définition de la struct MapMetadata
 │       └── service.go         # (Réservé pour la logique métier future)
 └── go.mod                     # Déclaration du module Go
-
+```
 ---
 
 ## 🚀 Lancer le serveur localement
