@@ -1,17 +1,30 @@
 package main
 
 import (
+	"database/sql"
+	"log"
 	"velum/internal/maps"
 
 	"github.com/gin-gonic/gin"
+	_ "github.com/mattn/go-sqlite3"
 )
 
 func main() {
+	db, err := sql.Open("sqlite3", "./database/maps.db")
+	if err != nil {
+		log.Fatal("Échec connexion DB:", err)
+	}
+	defer db.Close()
+
+	repo := maps.NewRepository(db)
+	service := maps.NewService(repo)
+	handler := maps.NewHandler(service)
+
 	r := gin.Default()
 
-	// Route GET /maps
-	r.GET("/maps", maps.GetMapsHandler)
+	r.GET("/maps", handler.GetMaps)
+	r.GET("/maps/:id", handler.GetMapByID)
 
-	// Lancement du serveur sur le port 8080
+	log.Println("Serveur lancé sur http://localhost:8080")
 	r.Run(":8080")
 }
