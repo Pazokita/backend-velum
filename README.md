@@ -79,7 +79,15 @@ Exemple de réponse :
   }
 ]
 ```
+## 📦 Base de données
 
+Le fichier `database/maps.db` contient les cartes historiques utilisées pour l’API.
+
+### Recréation manuelle de la base :
+
+```bash
+sqlite3 database/maps.db < database/init.sql
+```
 ## 📅 Roadmap Velum
 
 🟢 Phase 1 – MVP statique (en cours)
