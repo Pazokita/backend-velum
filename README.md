@@ -5,12 +5,19 @@ Ce dépôt contient le **backend en Go** structuré selon une architecture modul
 
 ---
 
-## 📌 Objectif de la Phase 1
+## 📌 Objectif de la Phase 2/3
 
-- ✅ Créer un serveur Go avec le framework **Gin**
-- ✅ Structurer le backend selon une Clean Architecture légère
-- ✅ Exposer une première route statique `GET /maps` qui renvoie des métadonnées de cartes
-- ✅ Préparer le terrain pour l’ajout de base de données et d’upload de cartes dans les prochaines phases
+✅ Créer un serveur Go avec le framework Gin
+
+✅ Structurer le projet de manière modulaire
+
+✅ Exposer une route GET /maps renvoyant plusieurs cartes (simulées ou via SQLite)
+
+✅ Ajouter une route GET /maps/:id pour les détails d’une carte
+
+🔄 En cours : intégration d’un microservice FastAPI pour la recherche sémantique IA
+
+🔜 Objectif MVP IA : GET /semantic-search?q=... → appelle /search (FastAPI)
 
 ---
 
@@ -19,7 +26,8 @@ Ce dépôt contient le **backend en Go** structuré selon une architecture modul
 - **Langage** : Go (Golang)
 - **Framework Web** : [Gin](https://github.com/gin-gonic/gin)
 - **Architecture** : Clean Architecture (modulaire et extensible)
-- **API** : RESTful
+- **Base de données** : SQLite (évolutif vers PostgreSQL + PostGIS)
+- **Interopérabilité** : microservice Python (FastAPI)
 
 ---
 
@@ -28,13 +36,19 @@ Ce dépôt contient le **backend en Go** structuré selon une architecture modul
 backend-velum/
 ├── cmd/
 │   └── server/
-│       └── main.go            # Point d’entrée du serveur
+│       └── main.go              # Point d’entrée du serveur
 ├── internal/
-│   └── maps/
-│       ├── handler.go         # Logique HTTP (GET /maps)
-│       ├── model.go           # Définition de la struct MapMetadata
-│       └── service.go         # (Réservé pour la logique métier future)
-└── go.mod                     # Déclaration du module Go
+│   ├── maps/
+│   │   ├── handler.go           # Routes /maps et /maps/:id
+│   │   ├── model.go             # Struct MapMetadata
+│   │   └── service.go           # Logique métier
+│   └── semanticsearch/
+│       └── handler.go           # Route /semantic-search → appelle FastAPI
+├── database/
+│   ├── maps.db                  # Base SQLite (si utilisée)
+│   └── init.sql                 # Script de création initiale
+└── go.mod                       # Déclaration du module Go
+
 ```
 ---
 
@@ -64,47 +78,47 @@ go run cmd/server/main.go
 
 ## 🔍 Endpoint disponible
 ```bash
-GET /maps
+📍 GET /maps
+Renvoie la liste des cartes disponibles.
 
-Renvoie une liste statique de métadonnées de cartes.
+📍 GET /maps/:id
+Renvoie une carte par son ID (titre, image, bbox, etc.)
 
-Exemple de réponse :
-[
-  {
-    "id": 1,
-    "title": "Paris 1750",
-    "imageUrl": "https://example.com/paris-1750.png",
-    "bbox": [2.3319, 48.8566, 2.3519, 48.8666],
-    "opacity": 0.8
-  }
-]
+🧠 GET /semantic-search?q=... (en cours)
+Fait une recherche sémantique via un microservice Python et retourne les lieux similaires.
 ```
 ## 📦 Base de données
 
 Le fichier `database/maps.db` contient les cartes historiques utilisées pour l’API.
 
-### Recréation manuelle de la base :
+### Intégration IA – FastAPI (Phase 4)
+⚡ En développement
 
+Le backend Go délègue les recherches sémantiques à un microservice FastAPI basé sur HuggingFace MiniLM.
+
+Endpoint FastAPI : POST /search
+
+Backend Go appelle : GET /semantic-search?q=... → interne à handler.go
+
+Le microservice lit une base JSON de lieux historiques (nom, description, coordonnées)
+
+## 🗃️ Base de données 
+
+Le fichier database/maps.db contient des données de cartes si tu veux utiliser SQLite.
+
+Recréation :
 ```bash
 sqlite3 database/maps.db < database/init.sql
+
 ```
 ## 📅 Roadmap Velum
 
-🟢 Phase 1 – MVP statique (en cours)
-	•	Backend Go
-	•	Route statique /maps
-	•	Frontend React Native (carte + overlay + slider)
-
-🟡 Phase 2 – Backend dynamique
-	•	Connexion à SQLite
-	•	Endpoint GET /maps/:id
-	•	Serveur REST complet
-
-🔵 Phases suivantes
-	•	Upload de cartes
-	•	Authentification
-	•	PostGIS & requêtes spatiales
-	•	Tests & déploiement
+🟢 Phase 1 – MVP statique
+🟡 Phase 2 – Backend dynamique (/maps, /maps/:id)
+🔵 Phase 3 – UI dynamique & superposition
+🧠 Phase 4 – IA : recherche sémantique (FastAPI)
+🚀 Phase 5 – Cartographie avancée (AR, 3D)
+📦 Phase 6 – Finalisation, test & publication
 
 ## 👩‍💻 Auteure
 
